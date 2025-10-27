@@ -655,23 +655,25 @@
             }
 
             async connect() {
-                // Fetch WebSocket URL dynamically
+                // Fetch WebSocket URL dynamically from API
                 let wsUrl;
                 try {
-                    // Try to fetch the URL from the server
-                    const response = await fetch('/ws_url.txt');
+                    // Try to fetch the URL from the server API
+                    const response = await fetch('/api/ws-url');
                     if (response.ok) {
-                        wsUrl = (await response.text()).trim();
-                        log(`Fetched WebSocket URL: ${wsUrl}`);
+                        const data = await response.json();
+                        wsUrl = data.ws_url;
+                        log(`Fetched WebSocket URL from API: ${wsUrl}`);
                     } else {
-                        throw new Error('Failed to fetch URL');
+                        throw new Error('Failed to fetch URL from API');
                     }
                 } catch (error) {
-                    // Fallback to localhost for local development
-                    wsUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-                        ? 'ws://localhost:3000'
-                        : 'wss://replace-me.trycloudflare.com';
-                    log(`Using fallback URL: ${wsUrl}`);
+                    // Fallback: construct WebSocket URL from current page location
+                    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                    const hostname = window.location.hostname;
+                    const port = hostname === 'localhost' || hostname === '127.0.0.1' ? ':3000' : '';
+                    wsUrl = `${protocol}//${hostname}${port}`;
+                    log(`API unavailable, using fallback URL: ${wsUrl}`);
                 }
 
                 log(`Connecting to ${wsUrl}...`);
@@ -684,6 +686,16 @@
                 this.ws.onopen = () => {
                     log('WebSocket connected');
                     updateStatus('Connected', true);
+
+                    // Initialize display with default values
+                    document.getElementById('sampleRate').textContent = `${this.sourceSampleRate} Hz`;
+                    const encodingDisplay = {
+                        'mulaw': 'μ-law (G.711)',
+                        'alaw': 'A-law (G.711)',
+                        'pcm': 'PCM',
+                        'l16': 'Linear PCM 16-bit'
+                    };
+                    document.getElementById('encoding').textContent = encodingDisplay[this.encoding] || this.encoding;
                 };
 
                 this.ws.onmessage = (event) => {
