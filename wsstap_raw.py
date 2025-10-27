@@ -621,6 +621,30 @@ class WSSRawMediaTap:
                     json.dumps(response_data).encode('utf-8')
                 )
 
+        # API endpoint to get WebSocket URL
+        elif request.path == "/api/ws-url":
+            headers = Headers([
+                ('Content-Type', 'application/json'),
+                ('Access-Control-Allow-Origin', '*')
+            ])
+
+            # Determine the WebSocket URL
+            if self.cloudflared_url:
+                ws_url = self.cloudflared_url.replace('https://', 'wss://')
+            else:
+                ws_url = f'ws://localhost:{self.port}'
+
+            response_data = json.dumps({
+                'ws_url': ws_url,
+                'cloudflared': bool(self.cloudflared_url)
+            })
+            return Response(
+                200,
+                'OK',
+                headers,
+                response_data.encode('utf-8')
+            )
+
         # API endpoint to select/switch stream
         elif request.path.startswith("/api/select-stream"):
             try:
