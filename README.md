@@ -2,11 +2,18 @@
 
 A real-time WebSocket audio streaming and monitoring interface with advanced audio playback features.
 
+<img src="https://github.com/user-attachments/assets/fb63243a-f3f5-487e-be62-d13fce7d2f83" alt="image" width="50%" />
+
 ## Overview
 
 This web interface provides a professional audio tap monitoring solution for WebSocket streams. It automatically detects audio encoding (μ-law, A-law, PCM), sample rates, and provides real-time visualization with configurable audio settings that persist across sessions.
 
 ## Features
+
+
+<img src="https://github.com/user-attachments/assets/853b6f84-91b4-4181-bc2d-ca7c72e021a7" alt="image" width="50%" />
+
+
 
 ### Audio Playback
 - **Scheduled Playback**: Uses Web Audio API's precise timing to eliminate gaps between audio chunks
